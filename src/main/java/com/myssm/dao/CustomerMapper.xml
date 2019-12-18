@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.myssm.dao.CustomerMapper">
+    <select id="findCustomerList" parameterType="queryCustomer" resultType="customer">
+        SELECT
+            cust_id,
+            cust_name,
+            cust_user_id,
+            cust_create_id,
+            dict_of_source.dict_item_name cust_source,
+            dict_of_industry.dict_item_name cust_industry,
+            dict_of_level.dict_item_name cust_level,
+            cust_linkman,
+            cust_phone,
+            cust_mobile,
+            cust_zipcode,
+            cust_address,
+            cust_createtime
+        FROM customer cust
+        LEFT JOIN base_dict dict_of_source ON cust.cust_source = dict_of_source.dict_id
+        left JOIN base_dict dict_of_industry on cust.cust_industry = dict_of_industry.dict_id
+        left join base_dict dict_of_level on cust.cust_level = dict_of_level.dict_id
+        <include refid="findCustomerWhere"></include>
+        limit #{startPage} , #{pageSize}
+    </select>
+    <select id="findTotalCount" parameterType="queryCustomer" resultType="int">
+        select count(*) from customer
+        <include refid="findCustomerWhere"></include>
+    </select>
+    <sql id="findCustomerWhere">
+        <where>
+            <if test="custName != null and custName != ''">
+                and cust_name like '%${custName}%'
+            </if><if test="custSource != null and custSource != ''">
+            and cust_source = #{custSource}
+        </if><if test="custIndustry != null and custIndustry != ''">
+            and cust_industry = #{custIndustry}
+        </if><if test="custLevel != null and custLevel != ''">
+            and cust_level = #{custLevel}
+        </if>
+        </where>
+    </sql>
+
+    <select id="findByCustomerId" parameterType="long" resultType="customer">
+        select * from customer where cust_id = #{id}
+    </select>
+
+    <update id="updateCustomer" parameterType="customer">
+        update customer
+        <set>
+            <if test="cust_name != null ">
+                cust_name = #{cust_name},
+            </if>
+            <if test="cust_user_id != 0">
+                cust_user_id = #{cust_user_id},
+            </if>
+            <if test="cust_create_id != 0">
+                cust_create_id = #{cust_create_id},
+            </if>
+            <if test="cust_source != null and cust_source != ''">
+                cust_source = #{cust_source},
+            </if>
+            <if test="cust_industry != null and cust_industry != ''">
+                cust_industry = #{cust_industry},
+            </if>
+            <if test="cust_level != null and cust_level != ''">
+                cust_level = #{cust_level},
+            </if>
+            <if test="cust_linkman != null and cust_linkman != ''">
+                cust_linkman = #{cust_linkman},
+            </if>
+            <if test="cust_phone != null and cust_phone != ''">
+                cust_phone = #{cust_phone},
+            </if>
+            <if test="cust_mobile != null and cust_mobile != ''">
+                cust_mobile = #{cust_mobile},
+            </if>
+            <if test="cust_zipcode != null and cust_zipcode != ''">
+                cust_zipcode = #{cust_zipcode},
+            </if>
+            <if test="cust_address != null and cust_address != ''">
+                cust_address = #{cust_address},
+            </if>
+            <if test="cust_createtime != null">
+                cust_createtime = #{cust_createtime},
+            </if>
+        </set>
+        where cust_id = #{cust_id}
+    </update>
+    <delete id="deleteCustomer" parameterType="long">
+        delete from customer where cust_id=#{id}
+    </delete>
+</mapper>
